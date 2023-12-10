@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Function to explain the program
+void explanation() {
+  printf("An example for the way how this program works: \n");
+  printf("If you enter def to get it coded then choose the backening amount as 3, the message gets coded as abc\n");
+  printf("So that means that the programs take the letters in the message\nyou write back at the same amount of the integer you entered.\n");
+}
+
+// Function to shift letters in a message
+void encode_message(char message[], int shift_amount) {
+  // Loop through each character in the message
+  for (int i = 0; message[i] != '\0'; ++i) {
+    char current_letter = message[i];
+
+    // Check if it's an uppercase letter
+    if (current_letter >= 'A' && current_letter <= 'Z') {
+      // Shift the letter and wrap around if needed
+      current_letter = (current_letter - 'A' + shift_amount) % 26 + 'A';
+    }
+    // Check if it's a lowercase letter
+    else if (current_letter >= 'a' && current_letter <= 'z') {
+      // Shift the letter and wrap around if needed
+      current_letter = (current_letter - 'a' + shift_amount) % 26 + 'a';
+    }
+
+    // Update the original message with the shifted letter
+    message[i] = current_letter;
+  }
+}
+
+int main() {
+  // Call the explanation function
+  explanation();
+
+  // Variables for file names, message, and shift amount
+  char input_filename[100];
+  char output_filename[] = "encoded_message.txt";
+  char message[100];
+  int shift_amount;
+
+  // Gets the input file name from user
+  printf("\nEnter the name of the input file: ");
+  scanf("%99s", input_filename);
+
+  // Gets the shift amount from user
+  printf("Enter the shift amount (integer): ");
+  scanf("%d", &shift_amount);
+
+  // Opens the input file for reading
+  FILE* input_file = fopen(input_filename, "r");
+  if (input_file == NULL) {
+    printf("Error opening input file!");
+    return 1;
+  }
+
+  // Opens the output file for writing
+  FILE* output_file = fopen(output_filename, "w");
+  if (output_file == NULL) {
+    printf("Error opening output file!");
+    fclose(input_file);
+    return 1;
+  }
+
+  // Reads lines from input file until the end
+  while (fgets(message, sizeof(message), input_file) != NULL) {
+    // Removes newline character from the end of the message
+    size_t message_length = strlen(message);
+    if (message_length > 0 && message[message_length - 1] == '\n') {
+      message[message_length - 1] = '\0';
+    }
+
+    // Prints the original message
+    printf("\nOriginal message: %s\n", message);
+
+    // Encodes the message with the given shift amount
+    encode_message(message, shift_amount);
+
+    // Prints the encoded message
+    printf("Encoded message: %s\n", message);
+
+    // Writes the encoded message to the output file
+    fprintf(output_file, "%s\n", message);
+  }
+
+  // Closes both input and output files
+  fclose(input_file);
+  fclose(output_file);
+
+  return 0;
+}
